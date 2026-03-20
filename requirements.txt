@@ -1,0 +1,6 @@
+flask
+psycopg2-binary # PostgreSQL adapter
+python-dotenv
+pytest
+pytest-flask
+pytest-cov # test cov report

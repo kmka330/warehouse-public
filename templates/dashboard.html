@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-12">
+        <div class="p-5 mb-4 bg-light rounded-3 shadow-sm">
+            <div class="container-fluid py-5">
+                <h1 class="display-5 fw-bold">Witaj w Systemie Magazynowym</h1>
+                <p class="col-md-8 fs-4">Zalogowany jako: <strong>{{ session.get('username') }}</strong></p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    {% if session.get('role') in ['admin', 'warehouse', 'sales'] %}
+    <div class="col-md-4 mb-4">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body d-flex flex-column">
+                <h5 class="card-title">Zarządzanie Produktami</h5>
+                <p class="card-text">Dodawaj i edytuj produkty, sprawdzaj stany magazynowe.</p>
+                <a href="{{ url_for('products') }}" class="btn btn-primary mt-auto">Przejdź</a>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    {% if session.get('role') in ['admin', 'warehouse'] %}
+    <div class="col-md-4 mb-4">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body d-flex flex-column">
+                <h5 class="card-title">Dostawcy</h5>
+                <p class="card-text">Zarządzaj bazą dostawców.</p>
+                <a href="{{ url_for('suppliers') }}" class="btn btn-dark mt-auto">Przejdź</a>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    {% if session.get('role') in ['sales', 'admin', 'warehouse'] %}
+    <div class="col-md-4 mb-4">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body d-flex flex-column">
+                <h5 class="card-title">Zamówienia</h5>
+                <p class="card-text">Przeglądaj zamówienia i zarządzaj wysyłką.</p>
+                <a href="{{ url_for('orders') }}" class="btn btn-success mt-auto">Przejdź</a>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    {% if session.get('role') == 'admin' %}
+    <div class="col-md-4 mb-4">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body d-flex flex-column">
+                <h5 class="card-title">Użytkownicy</h5>
+                <p class="card-text">Zarządzaj dostępem do systemu.</p>
+                <a href="{{ url_for('users') }}" class="btn btn-warning mt-auto">Przejdź</a>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    <div class="col-md-4 mb-4">
+        <div class="card h-100 shadow-sm">
+            <div class="card-body d-flex flex-column">
+                <h5 class="card-title">Raporty</h5>
+                <p class="card-text">Przeglądaj podsumowania i bestsellery.</p>
+                <a href="{{ url_for('reports') }}" class="btn btn-info text-white mt-auto">Przejdź</a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

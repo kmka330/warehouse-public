@@ -1,0 +1,127 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <h2>Zamówienia</h2>
+        {% if session.get('role') in ['sales', 'admin'] %}
+        <button type="button" class="btn btn-success mb-3" data-bs-toggle="modal" data-bs-target="#addOrderModal">
+            Nowe Zamówienie
+        </button>
+        {% endif %}
+
+        <div class="card mb-4">
+            <div class="card-header">Ostatnie Zamówienia</div>
+            <div class="card-body">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Data</th>
+                            <th>Klient</th>
+                            <th>Status</th>
+                            <th>Utworzone przez</th>
+                            <th>Akcje</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for order in orders %}
+                        <tr>
+                            <td><a href="{{ url_for('order_details', id=order.id) }}">#{{ order.id }}</a></td>
+                            <td>{{ order.date.strftime('%Y-%m-%d %H:%M') }}</td>
+                            <td>{{ order.client_name }}</td>
+                            <td>
+                                {% if order.status == 'NEW' %}
+                                <span class="badge bg-primary">Nowe</span>
+                                {% elif order.status == 'SHIPPED' %}
+                                <span class="badge bg-success">Wysłano</span>
+                                {% else %}
+                                {{ order.status }}
+                                {% endif %}
+                            </td>
+                            <td>{{ order.created_by_user }}</td>
+                            <td>
+                                {% if order.status == 'NEW' %}
+                                <form method="POST" action="{{ url_for('ship_order', id=order.id) }}" class="d-inline">
+                                    <button type="submit" class="btn btn-sm btn-success">Zatwierdź wysyłkę</button>
+                                </form>
+                                {% endif %}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+{% if session.get('role') in ['sales', 'admin'] %}
+<div class="modal fade" id="addOrderModal" tabindex="-1" aria-labelledby="addOrderModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addOrderModalLabel">Nowe Zamówienie</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form method="POST" action="{{ url_for('orders') }}">
+                    <div class="mb-3">
+                        <label for="client_name" class="form-label">Nazwa Klienta</label>
+                        <input type="text" class="form-control" id="client_name" name="client_name" required>
+                    </div>
+
+                    <hr>
+                    <h6>Produkty</h6>
+                    <div id="products-container">
+                        <div class="row mb-2 product-row">
+                            <div class="col-md-8">
+                                <select class="form-select" name="product_ids[]" required>
+                                    <option value="" disabled selected>Wybierz produkt...</option>
+                                    {% for product in products %}
+                                    <option value="{{ product.id }}">{{ product.name }} (Cena: {{ product.price }} PLN,
+                                        Stan: {{ product.stock }})</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <input type="number" class="form-control" name="quantities[]" placeholder="Ilość"
+                                    min="1" required>
+                            </div>
+                            <div class="col-md-1">
+                                <button type="button" class="btn btn-danger btn-sm remove-row" disabled>-</button>
+                            </div>
+                        </div>
+                    </div>
+                    <button type="button" class="btn btn-secondary btn-sm mb-3" id="add-product-row">Dodaj kolejny
+                        produkt</button>
+
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-success">Złóż Zamówienie</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    document.getElementById('add-product-row').addEventListener('click', function () {
+        var container = document.getElementById('products-container');
+        var firstRow = container.querySelector('.product-row');
+        var newRow = firstRow.cloneNode(true);
+
+        newRow.querySelector('select').value = "";
+        newRow.querySelector('input').value = "";
+
+        newRow.querySelector('.remove-row').disabled = false;
+        newRow.querySelector('.remove-row').addEventListener('click', function () {
+            this.closest('.product-row').remove();
+        });
+
+        container.appendChild(newRow);
+    });
+</script>
+{% endif %}
+{% endblock %}

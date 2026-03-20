@@ -1,0 +1,13 @@
+.env
+.git
+.gitignore
+.idea/
+.pytest_cache/
+.venv/
+__pycache__/
+*.py[cod]
+*.swp
+.DS_Store
+env/
+venv/
+ENV/

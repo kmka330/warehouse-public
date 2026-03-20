@@ -1,0 +1,188 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12 mb-5">
+        <h2>Raporty</h2>
+    </div>
+
+    <div class="col-md-6 mb-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-info text-white">
+                <h5 class="mb-0">Podsumowanie zamówień</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>ID zamówienia</th>
+                            <th>Data</th>
+                            <th>Klient</th>
+                            <th>Wartość całkowita</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in summary %}
+                        <tr>
+                            <td><a href="{{ url_for('order_details', id=row.order_id) }}">#{{ row.order_id }}</a></td>
+                            <td>{{ row.date.strftime('%Y-%m-%d %H:%M') }}</td>
+                            <td>{{ row.client_name }}</td>
+                            <td><strong>{{ row.total_value }} PLN</strong></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 mb-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-warning text-dark">
+                <h5 class="mb-0">Bestsellery</h5>
+            </div>
+            <div class="card-body">
+                <p class="text-muted">Produkty sprzedane w ilości > 10 sztuk.</p>
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Produkt</th>
+                            <th>Sprzedana ilość</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in bestsellers %}
+                        <tr>
+                            <td>{{ row.name }}</td>
+                            <td><span class="badge bg-success rounded-pill">{{ row.total_sold }}</span></td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    {% if session.get('role') in ['admin', 'warehouse'] %}
+    <div class="col-md-6 mb-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0">Wartość magazynu wg dostawców</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Dostawca</th>
+                            <th>Liczba produktów</th>
+                            <th>Wartość (PLN)</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in supplier_inventory %}
+                        <tr>
+                            <td>{{ row.company_name }}</td>
+                            <td>{{ row.products_count }}</td>
+                            <td>{{ row.total_inventory_value }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-6 mb-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-danger text-white">
+                <h5 class="mb-0">Niskie stany magazynowe (&lt; 10)</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Produkt</th>
+                            <th>SKU</th>
+                            <th>Stan</th>
+                            <th>Dostawca</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in low_stock %}
+                        <tr>
+                            <td>{{ row.name }}</td>
+                            <td>{{ row.sku }}</td>
+                            <td class="text-danger fw-bold">{{ row.stock }}</td>
+                            <td>{{ row.supplier_name }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    {% if session.get('role') == 'admin' %}
+    <div class="col-md-6 mb-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0">Ranking sprzedawców</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Użytkownik</th>
+                            <th>Liczba zamówień</th>
+                            <th>Wartość sprzedaży</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in sales_by_employee %}
+                        <tr>
+                            <td>{{ row.username }}</td>
+                            <td>{{ row.orders_count }}</td>
+                            <td>{{ row.total_sales_value }} PLN</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+
+    {% if session.get('role') in ['admin', 'sales'] %}
+    <div class="col-md-6 mb-4">
+        <div class="card shadow-sm h-100">
+            <div class="card-header bg-secondary text-white">
+                <h5 class="mb-0">Zalegający towar</h5>
+            </div>
+            <div class="card-body">
+                <table class="table table-hover">
+                    <thead>
+                        <tr>
+                            <th>Produkt</th>
+                            <th>SKU</th>
+                            <th>Stan</th>
+                            <th>Sprzedano</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for row in worst_sellers %}
+                        <tr>
+                            <td>{{ row.name }}</td>
+                            <td>{{ row.sku }}</td>
+                            <td>{{ row.stock }}</td>
+                            <td>{{ row.total_sold }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

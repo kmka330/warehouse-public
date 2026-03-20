@@ -1,0 +1,118 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <h2>Użytkownicy</h2>
+        <button type="button" class="btn btn-primary mb-3" data-bs-toggle="modal" data-bs-target="#addUserModal">
+            Dodaj Użytkownika
+        </button>
+
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Nazwa Użytkownika</th>
+                    <th>Rola</th>
+                    <th>Akcje</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for user in users %}
+                <tr>
+                    <td>{{ user.id }}</td>
+                    <td>{{ user.username }}</td>
+                    <td>
+                        {% if user.role == 'admin' %}
+                        <span class="badge bg-danger">Administrator</span>
+                        {% elif user.role == 'warehouse' %}
+                        <span class="badge bg-warning text-dark">Magazynier</span>
+                        {% elif user.role == 'sales' %}
+                        <span class="badge bg-success">Sprzedawca</span>
+                        {% else %}
+                        {{ user.role }}
+                        {% endif %}
+                    </td>
+                    <td>
+                        {% if user.id != session.get('user_id') %}
+                        <button type="button" class="btn btn-sm btn-warning" data-bs-toggle="modal"
+                            data-bs-target="#editUserModal{{ user.id }}">
+                            Edytuj Rolę
+                        </button>
+                        <form method="POST" action="{{ url_for('delete_user', id=user.id) }}" class="d-inline"
+                            onsubmit="return confirm('Czy na pewno chcesz usunąć tego użytkownika?');">
+                            <button type="submit" class="btn btn-sm btn-danger">Usuń</button>
+                        </form>
+                        {% else %}
+                        <span class="text-muted small">To Ty</span>
+                        {% endif %}
+
+                        <!-- Edit Role Modal -->
+                        <div class="modal fade" id="editUserModal{{ user.id }}" tabindex="-1" aria-hidden="true">
+                            <div class="modal-dialog">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title">Edytuj Rolę Użytkownika: {{ user.username }}</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal"
+                                            aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <form method="POST" action="{{ url_for('edit_user_role', id=user.id) }}">
+                                            <div class="mb-3">
+                                                <label for="role" class="form-label">Rola</label>
+                                                <select class="form-select" name="role" required>
+                                                    <option value="admin" {% if user.role=='admin' %}selected{% endif
+                                                        %}>Administrator</option>
+                                                    <option value="warehouse" {% if user.role=='warehouse' %}selected{%
+                                                        endif %}>Magazynier</option>
+                                                    <option value="sales" {% if user.role=='sales' %}selected{% endif
+                                                        %}>Sprzedawca</option>
+                                                </select>
+                                            </div>
+                                            <button type="submit" class="btn btn-primary">Zapisz Zmiany</button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Modal -->
+<div class="modal fade" id="addUserModal" tabindex="-1" aria-labelledby="addUserModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="addUserModalLabel">Dodaj Nowego Użytkownika</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form method="POST" action="{{ url_for('users') }}">
+                    <div class="mb-3">
+                        <label for="username" class="form-label">Nazwa Użytkownika</label>
+                        <input type="text" class="form-control" id="username" name="username" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="password" class="form-label">Hasło</label>
+                        <input type="password" class="form-control" id="password" name="password" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="role" class="form-label">Rola</label>
+                        <select class="form-select" id="role" name="role" required>
+                            <option value="admin">Administrator</option>
+                            <option value="warehouse">Magazynier</option>
+                            <option value="sales">Sprzedawca</option>
+                        </select>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Zapisz</button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

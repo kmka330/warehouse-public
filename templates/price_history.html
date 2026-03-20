@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-12">
+        <h2>Historia Cen: {{ product_name }}</h2>
+        <a href="{{ url_for('products') }}" class="btn btn-secondary mb-3">Powrót</a>
+
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Data Zmiany</th>
+                    <th>Stara Cena</th>
+                    <th>Nowa Cena</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for entry in history %}
+                <tr>
+                    <td>{{ entry.change_date.strftime('%Y-%m-%d %H:%M') }}</td>
+                    <td>{{ entry.old_price }} PLN</td>
+                    <td>{{ entry.new_price }} PLN</td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="3" class="text-center">Brak historii zmian cen.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
