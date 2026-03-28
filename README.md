@@ -41,6 +41,22 @@ The UI is server-rendered with Jinja2 templates and Bootstrap. The application l
   - sales by employee
   - worst sellers
 
+## Screenshots
+
+Selected role-based spaces:
+
+### Admin Space
+
+![Admin space dashboard](docs/screenshots/admin-space-dashboard.png)
+
+### Sales Space (`sprzedawca`)
+
+![Sales space dashboard](docs/screenshots/sales-space-dashboard.png)
+
+### Warehouse Space (`magazynier`)
+
+![Warehouse space dashboard](docs/screenshots/warehouse-space-dashboard.png)
+
 ## Technical Approach
 
 The application uses a "thick database" approach:
@@ -140,6 +156,7 @@ db.py                 Database connection helper
 schema.sql            Tables, triggers, views, and seed data
 reset_db.py           Local database reset/bootstrap script
 templates/            Jinja2 templates
+docs/screenshots/     Selected UI screenshots used in this README
 Dockerfile            Web image definition
 docker-compose.yml    Application and PostgreSQL services
 .env.example          Example environment configuration
